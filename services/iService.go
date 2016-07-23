@@ -1,8 +1,8 @@
 package services
 
 import (
-	. "github.com/SofyanHadiA/linq/core/repository"
-	"github.com/SofyanHadiA/linq/core/utils"
+	. "github.com/SofyanHadiA/linq-core/repository"
+	"github.com/SofyanHadiA/linq-core/utils"
 
 	"github.com/satori/go.uuid"
 )

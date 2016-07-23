@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/SofyanHadiA/linq/core/utils"
+	"github.com/SofyanHadiA/linq-core/utils"
 )
 
 const (

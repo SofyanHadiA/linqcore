@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/SofyanHadiA/linq/core/utils"
+	"github.com/SofyanHadiA/linq-core/utils"
 
 	"gopkg.in/yaml.v2"
 )
