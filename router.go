@@ -1,13 +1,14 @@
-package core
+package linqcore
 
 import (
 	"net/http"
 
-	"github.com/SofyanHadiA/linq-core/utils"
+	"github.com/SofyanHadiA/linqcore/utils"
 
 	"github.com/gorilla/mux"
 )
 
+// Route struct
 type Route struct {
 	Name        string
 	Method      string
@@ -15,8 +16,10 @@ type Route struct {
 	HandlerFunc http.HandlerFunc
 }
 
+// Routes route array container
 type Routes []Route
 
+// NewRouter create new route object
 func NewRouter(routes Routes) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	for _, route := range routes {

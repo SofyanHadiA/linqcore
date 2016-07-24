@@ -1,46 +1,44 @@
-package core
+package linqcore
 
 import (
 	"net/http"
 	"text/template"
 
-	"github.com/SofyanHadiA/linq-core/utils"
+	"github.com/SofyanHadiA/linqcore/utils"
 )
 
-const (
-	VIEW_LOCATION = "apps/views/"
-)
-
-type ViewData struct {
-	BaseUrl   string
-	PageTitle string
-	PageDesc  string
-	Data      map[string]interface{}
+// View holds view objet data
+type View struct {
+	BaseURL      string
+	PageTitle    string
+	PageDesc     string
+	Template     map[string]string
+	Data         map[string]interface{}
+	ViewLocation string
 }
 
-var viewData ViewData
-
-var mainTemplate string = VIEW_LOCATION + "template.html"
-var headerTemplate string = VIEW_LOCATION + "header.html"
-var footerTemplate string = VIEW_LOCATION + "footer.html"
-var sidebarTemplate string = VIEW_LOCATION + "sidebar.html"
-var menubarTemplate string = VIEW_LOCATION + "menubar.html"
-
-func init() {
-	viewData = ViewData{
-		BaseUrl:   GetStrConfig("app.baseUrl"),
-		PageTitle: GetStrConfig("app.pageTitle"),
+// NewView create new view data
+func NewView(viewLocation string, configs Configs) View {
+	return View{
+		BaseURL:      configs.GetStrConfig("app.baseUrl"),
+		PageTitle:    configs.GetStrConfig("app.pageTitle"),
+		ViewLocation: viewLocation,
+		Template: map[string]string{
+			"mainTemplate":    viewLocation + "template.html",
+			"headerTemplate":  viewLocation + "header.html",
+			"footerTemplate":  viewLocation + "footer.html",
+			"sidebarTemplate": viewLocation + "sidebar.html",
+			"menubarTemplate": viewLocation + "menubar.html",
+		},
 	}
 }
 
-func ParseHtml(templateLoc string, data ViewData, w http.ResponseWriter, r *http.Request) {
-	data.PageTitle = viewData.PageTitle
-	data.BaseUrl = viewData.BaseUrl
-
+// ParseHTML parse html without header and footer
+func (view View) ParseHTML(templateLoc string, w http.ResponseWriter, r *http.Request, data map[string]interface{}) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	utils.Log.Debug("Parsing view(s): ", mainTemplate, templateLoc)
-	t := template.Must(template.ParseFiles(templateLoc))
+	utils.Log.Debug("Parsing view(s): ", templateLoc)
+	t := template.Must(template.ParseFiles(view.ViewLocation + templateLoc))
 
 	err := t.ExecuteTemplate(w, "main", data)
 	if err != nil {
@@ -48,22 +46,21 @@ func ParseHtml(templateLoc string, data ViewData, w http.ResponseWriter, r *http
 	}
 }
 
-func ParseHtmlTemplate(templateLoc string, data ViewData, w http.ResponseWriter, r *http.Request) {
-	data.PageTitle = viewData.PageTitle
-	data.BaseUrl = viewData.BaseUrl
-
+// ParseHTMLTemplate with html with footer and header
+func (view View) ParseHTMLTemplate(templateLoc string, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	utils.Log.Debug("Parsing view(s): ", mainTemplate, templateLoc)
+	utils.Log.Debug("Parsing view(s): ", view.Template["mainTemplate"], templateLoc)
 	t := template.Must(template.ParseFiles(
-		mainTemplate,
-		headerTemplate,
-		footerTemplate,
-		sidebarTemplate,
-		menubarTemplate,
-		templateLoc))
+		view.Template["mainTemplate"],
+		view.Template["headerTemplate"],
+		view.Template["footerTemplate"],
+		view.Template["sidebarTemplate"],
+		view.Template["menubarTemplate"],
+		templateLoc,
+	))
 
-	err := t.ExecuteTemplate(w, "main", data)
+	err := t.ExecuteTemplate(w, "main", view)
 	if err != nil {
 		utils.Log.Fatal("executing template: ", err)
 	}

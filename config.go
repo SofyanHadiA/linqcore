@@ -1,38 +1,45 @@
-package core
+package linqcore
 
 import (
 	"io/ioutil"
 	"os"
 	"strings"
 
-	"github.com/SofyanHadiA/linq-core/utils"
+	"github.com/SofyanHadiA/linqcore/utils"
 
 	"gopkg.in/yaml.v2"
 )
 
-const ENVAR_CONFIG_PREFIX = "LINQ_"
+var envarConfigPrefix string
 
+// Configs object
 type Configs map[string]interface{}
 
 var configs Configs
 
-func init() {
-	configs = loadConfig("conf/db.conf")
+// NewConfig create new config class
+func NewConfig(envarConfigPrefix string) Configs {
+	if len(envarConfigPrefix) > 0 {
+		envarConfigPrefix = "LINQ_"
+	}
+
+	configs := loadConfig("conf/db.conf")
 	appConfig := loadConfig("conf/app.conf")
-	auth0Config := loadConfig("conf/auth0.conf")
 
 	utils.MapCopy(configs, appConfig)
-	utils.MapCopy(configs, auth0Config)
 
 	utils.Log.Info("Application configs: ", configs)
+	return configs
 }
 
-func GetStrConfig(configKey string) string {
-	return configs[configKey].(string)
+// GetStrConfig get config type string
+func (config Configs) GetStrConfig(configKey string) string {
+	return config[configKey].(string)
 }
 
-func GetIntConfig(configKey string) int {
-	return configs[configKey].(int)
+// GetIntConfig get config type integer
+func (config Configs) GetIntConfig(configKey string) int {
+	return config[configKey].(int)
 }
 
 func loadConfig(file string) Configs {
@@ -50,7 +57,7 @@ func loadConfig(file string) Configs {
 	}
 
 	for k := range config {
-		envarKey := ENVAR_CONFIG_PREFIX + strings.ToUpper(strings.Replace(k, ".", "_", -1))
+		envarKey := envarConfigPrefix + strings.ToUpper(strings.Replace(k, ".", "_", -1))
 		envarValue := os.Getenv(envarKey)
 		if len(envarValue) > 0 {
 			config[k] = envarValue

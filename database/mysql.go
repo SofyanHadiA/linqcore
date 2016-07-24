@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/SofyanHadiA/linq-core/repository"
-	"github.com/SofyanHadiA/linq-core/utils"
+	"github.com/SofyanHadiA/linqcore/repository"
+	"github.com/SofyanHadiA/linqcore/utils"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
